@@ -48,21 +48,20 @@ warnings.filterwarnings('ignore', message=".*findfont: Font family.*not found.*"
 # Initialize dictionary to store stock data
 sp_data_dict = dict()
 
-# Read symbols from file and load data
 with open('symbol_list.txt', 'r') as file:
     for line in file:
         symbol = line.strip()
         df = pd.read_excel(symbol+"_sp_data.xlsx")
         sp_data_dict[symbol] = df
 
-# Calculate moving averages for each stock
+# 이평선 계산
 for symbol, sp_data in sp_data_dict.items():
     sp_data['MA_5'] = sp_data['Close'].rolling(window=5).mean()
     sp_data['MA_20'] = sp_data['Close'].rolling(window=10).mean()
     sp_data['MA_60'] = sp_data['Close'].rolling(window=60).mean()
     sp_data['MA_120'] = sp_data['Close'].rolling(window=120).mean()
 
-# Identify golden and dead crosses
+# 골든 크로스 및 데드 크로스 신호 생성
 for symbol, sp_data in sp_data_dict.items():
     for cross, st, lt in itertools.product(['Golden', 'Dead'], ['MA_5', 'MA_20'], ['MA_60', 'MA_120']):
         output_col = "{} {} {}".format(cross, st, lt)
