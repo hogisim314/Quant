@@ -122,3 +122,34 @@ for symbol, sp_data in sp_data_dict.items():
     for st, lt in itertools.product(['5', '20'], ['60', '120']):
         ror = calc_ror_using_gd_cross(sp_data_dict, symbol, st, lt)
         print(f"{symbol} {st} {lt} : {ror}")
+
+# 데이터 파싱
+data_list = []
+
+# ROR.txt 파일 읽기
+with open('ROR.txt', 'r') as file:
+    for line in file:
+        parts = line.strip().split()
+        symbol = parts[0]
+        st = int(parts[1])
+        lt = int(parts[2])
+        value = float(parts[4].replace(':', ''))
+        data_list.append((symbol, st, lt, value))
+
+# 데이터프레임 생성
+df = pd.DataFrame(data_list, columns=['Symbol', 'ST', 'LT', 'Value'])
+
+# 각 Symbol에 대한 수익률 시각화
+plt.figure(figsize=(15, 10))
+
+# Symbol별로 그룹화
+for symbol, group_data in df.groupby('Symbol'):
+    plt.plot(group_data['ST'].astype(str) + '-' + group_data['LT'].astype(str), group_data['Value'], marker='o', label=symbol)
+
+plt.xlabel('ST-LT')
+plt.ylabel('ROR (%)')
+plt.title('Symbol ror comparison')
+plt.legend()
+plt.xticks(rotation=90)
+plt.grid(True)
+plt.show()
